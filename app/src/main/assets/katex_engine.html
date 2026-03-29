@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="katex/katex.min.css">
+    <script src="katex/katex.min.js"></script>
+
+    <style>
+body{
+ margin:0;
+ padding:0;
+ overflow:hidden;
+}
+
+.container{
+ position:relative;
+ display:inline-block;
+}
+
+.formula{
+ position:relative;
+ left:0;
+ top:0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div id="f1" class="formula"></div>
+    <div id="f2" class="formula"></div>
+</div>
+
+<script>
+
+let active = 1
+let cache = {}
+
+function renderFormula(latex){
+
+ if(cache[latex]){
+   swap(cache[latex])
+   return
+ }
+
+ let target = active === 1 ? "f2" : "f1"
+ let el = document.getElementById(target)
+
+ try{
+   katex.render(latex, el, {throwOnError:false})
+ }catch(e){
+   el.innerText = latex
+ }
+
+ cache[latex] = el.innerHTML
+ swap(el.innerHTML)
+}
+
+function swap(html){
+
+ let visible = active === 1 ? "f1" : "f2"
+ let hidden  = active === 1 ? "f2" : "f1"
+
+ document.getElementById(hidden).innerHTML = html
+
+ document.getElementById(hidden).style.display="block"
+ document.getElementById(visible).style.display="none"
+
+ active = active === 1 ? 2 : 1
+}
+
+</script>
+
+</body>
+</html>

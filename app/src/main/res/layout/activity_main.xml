@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+<!--        <com.judemanutd.katexview.KatexView
+            android:id="@+id/Expression"
+            android:layout_width="match_parent"
+            android:layout_height="98dp"
+            android:text="Enter expression..."
+            android:textColor="#B5B8B1"
+            android:textSize="36dp"
+            android:gravity="bottom"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeMaxTextSize="36sp"
+            app:autoSizeStepGranularity="1sp"></com.judemanutd.katexview.KatexView>-->
+        <WebView
+            android:id="@+id/Expression"
+            android:layout_width="match_parent"
+            android:layout_height="98dp"
+            />
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:columnCount="3"
+            android:rowCount="3"
+            android:id="@+id/GridLayout1"></GridLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnCount="4"
+            android:rowCount="5"
+            android:id="@+id/GridLayout2"
+            >
+
+
+
+        </GridLayout>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
