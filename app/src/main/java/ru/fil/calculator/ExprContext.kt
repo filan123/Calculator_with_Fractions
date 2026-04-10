@@ -35,6 +35,48 @@ class ExprContext(
     }
 
     /**
+     * Вставляет `token` в `text` в позицию курсора и выставляет `posOfpipe` в "место ввода".
+     *
+     * Примеры:
+     * - `\dfrac{\,,\,}{\,,\,}` -> курсор в начало числителя: `\dfrac{|\,\,}{\,\,}`
+     * - `^{2}` -> курсор внутри фигурных скобок степени: `^{|2}`
+     * - `\sqrt{}` -> курсор внутри `{}`: `\sqrt{|}`
+     * - `\sin(x)` -> курсор после `(`: `\sin(|x)`
+     */
+    fun insertToken(token: String) {
+        val insertPos = posOfpipe
+        text.insert(insertPos, token)
+
+        posOfpipe = when {
+            // \dfrac{...}{...}
+            token.startsWith("\\dfrac") -> {
+                val firstBrace = token.indexOf('{')
+                if (firstBrace >= 0) insertPos + firstBrace + 1 else insertPos + token.length
+            }
+
+            // ^{...}
+            token.startsWith("^{") -> {
+                val firstBrace = token.indexOf('{')
+                if (firstBrace >= 0) insertPos + firstBrace + 1 else insertPos + token.length
+            }
+
+            // \sqrt{...}
+            token.startsWith("\\sqrt") -> {
+                val firstBrace = token.indexOf('{')
+                if (firstBrace >= 0) insertPos + firstBrace + 1 else insertPos + token.length
+            }
+
+            // \sin(x), \cos(x), \tan(x), \cot(x) и т.п.
+            token.contains('(') -> {
+                val lastOpenParen = token.lastIndexOf('(')
+                if (lastOpenParen >= 0) insertPos + lastOpenParen + 1 else insertPos + token.length
+            }
+
+            else -> insertPos + token.length
+        }.coerceIn(0, text.length)
+    }
+
+    /**
      * Удаляет символ/команду слева от курсора (аналог старой funcRemove).
      * Обновляет `text` и `posOfpipe`.
      */
@@ -60,6 +102,14 @@ class ExprContext(
                 posOfpipe = fracStart
                 return posOfpipe
             }
+        }
+
+        // Целиком убираем бинарные LaTeX-операторы \cdot, \div, \pm
+        val latexOpLen = latexBinaryOpLenBefore(text, posOfpipe)
+        if (latexOpLen > 0) {
+            text.delete(posOfpipe - latexOpLen, posOfpipe)
+            posOfpipe -= latexOpLen
+            return posOfpipe
         }
 
         // Обычное удаление LaTeX-команды типа \sin, \cos и т.п.
@@ -128,7 +178,7 @@ class ExprContext(
         }
 
         var i = 0
-        while (i < text.length - 1) {
+        while (i < text.length ) {
             // случай: {} -> {\,\,} (два техпробела, как в шаблоне \dfrac{\,\,}{\,\,})
             if (text[i] == '{' && text[i + 1] == '}') {
                 text.insert(i + 1, "\\,\\,")

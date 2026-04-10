@@ -47,16 +47,7 @@ class MyFraction(var numerator: Int, var denominator: Int) : Item() {
         return d == 1
     }
 
-    private fun gcd(a: Int, b: Int): Int {
-        var x = a
-        var y = b
-        while (y != 0) {
-            val t = y
-            y = x % y
-            x = t
-        }
-        return x
-    }
+
 
     fun toStringBuilder():StringBuilder {
         if (denominator == 1){return StringBuilder(numerator.toString())}

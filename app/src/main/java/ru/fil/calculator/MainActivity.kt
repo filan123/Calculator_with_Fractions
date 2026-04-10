@@ -2,27 +2,80 @@ package ru.fil.calculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.TextView
-import android.widget.Button
+import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebView
+import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.judemanutd.katexview.KatexView
 import java.lang.StringBuilder
 
 
 class MainActivity : AppCompatActivity() {
-    val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,"\\pm", "\\dfrac{\\,\\,}{\\,\\,}")
-    val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")",)
+    val fractionLatex = "\\dfrac{\\,\\,}{\\,\\,}"
+    val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,"\\pm",fractionLatex )
+    val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}")
 
     // создаем тэги для кнопок в стиле KaTeX
-    val list_btn = listOf("delete","AC","\\dfrac{\\,\\,}{\\,\\,}","\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","\\pm","eval")
-    val list_add_btn = listOf("\\leftarrow","\\rightarrow","\\sqrt{}", "(", ")", "log", "ln", "x^2", "\\sin(x)", "\\cos(x)", "\\tan(x)","\\cot(x)")
+    val list_btn = listOf("delete","AC",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","\\pm","eval")
+    val list_add_btn = listOf("\\leftarrow","\\rightarrow","\\sqrt{}", "(", ")", "\\log", "\\ln", "^{2}", "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
 
     lateinit var controller: FormulaController
-    val buttons = mutableListOf<Int>()
+
+    // KatexView template (katex.chtml) registers only $$…$$ for auto-render, not $…$
+    private fun displayLatexForTag(tag: String): String = when (tag) {
+        "delete" -> "$$\\text{Del}$$"
+        "AC" -> "$$\\text{AC}$$"
+        "eval" -> "$$=$$"
+        fractionLatex->"$$\\dfrac{x}{y}$$"
+        "^{2}" -> "$$ x^{2}$$"
+        "\\sin(\\,)" -> "\\sin(x)"
+        "\\cos(\\,)" -> "\\cos(x)"
+        "\\tan(\\,)" -> "\\tan(x)"
+        "\\cot(\\,)" -> "\\cot(x)"
+        else -> "$$" + tag + "$$"
+    }
+
+    private fun createKatexKey(tag: String, listener: View.OnClickListener): FrameLayout {
+        val minHeightPx = (48 * resources.displayMetrics.density).toInt()
+        val katex = KatexView(this).apply {
+            setText(displayLatexForTag(tag))
+            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.black))
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER
+            )
+        }
+        return object : FrameLayout(this) {
+            override fun onInterceptTouchEvent(ev: MotionEvent): Boolean = true
+
+            override fun onTouchEvent(event: MotionEvent): Boolean {
+                if (event.actionMasked == MotionEvent.ACTION_UP) {
+                    performClick()
+                }
+                return true
+            }
+        }.apply {
+            id = View.generateViewId()
+            this.tag = tag
+            setBackgroundResource(R.drawable.button_border)
+            isClickable = true
+            isFocusable = true
+            minimumHeight = minHeightPx
+            layoutParams = GridLayout.LayoutParams().apply {
+                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                width = 0
+                height = minHeightPx
+            }
+            addView(katex)
+            setOnClickListener(listener)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,58 +88,15 @@ class MainActivity : AppCompatActivity() {
         val container2 = findViewById<GridLayout>(R.id.GridLayout2)
 
 
-        for (i in 0..19){
-            val button = Button(this).apply{
-                text= list_btn[i] // что отображаем в последствии заменить на картинки
-                id = View.generateViewId()
-                tag = list_btn[i] // тэг
-                layoutParams = GridLayout.LayoutParams().apply {
-                    columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                    rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                    width = 0
-                    height = GridLayout.LayoutParams.WRAP_CONTENT
-                }
-            }
-            container2.addView(button)
-            buttons.add(button.id)
-        }
-        for (i in 0..11){
-            val button = Button(this).apply{
-                text= list_add_btn[i] // что отображаем в последствии заменить на картинки
-                id = View.generateViewId()
-                tag = list_add_btn[i] // тэг
-                layoutParams = GridLayout.LayoutParams().apply {
-                    columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                    rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                    width = 0
-                    height = GridLayout.LayoutParams.WRAP_CONTENT
-                }
-            }
-            container1.addView(button)
-            buttons.add(button.id)
-        }
-
-        FormulaEngine.init(this)
-
-        val UserExpr = findViewById<WebView>(R.id.Expression)
-
-        UserExpr.addView(FormulaEngine.webView)
-
         controller = FormulaController()
-        // слушаем кнопки
-        val listener = View.OnClickListener{ view ->
+        val listener = View.OnClickListener { view ->
             val char = view.tag.toString()
 
             when (char){
-                in list_numb -> {
-                    context.text.insert(context.posOfpipe,char)
-                    context.posOfpipe += char.length
-                }
+                in list_numb -> context.insertToken(char)
                 /*else {if(expr.last() in list_oper){expr.add(char)} else{expr[expr.size-1]+=char}}*/
-                in list_oper -> {
-                    context.text.insert(context.posOfpipe, char)
-                    context.posOfpipe += char.length
-                }
+                in list_oper -> context.insertToken(char)
+
 
 
                 "delete" -> {
@@ -135,11 +145,18 @@ class MainActivity : AppCompatActivity() {
             controller.update(InsertCursor(context.text, context.posOfpipe))
         }
 
+        for (i in 0..19) {
+            container2.addView(createKatexKey(list_btn[i], listener))
+        }
+        for (i in 0..11) {
+            container1.addView(createKatexKey(list_add_btn[i], listener))
+        }
 
+        FormulaEngine.init(this)
 
+        val UserExpr = findViewById<WebView>(R.id.Expression)
 
-        buttons.forEach { id -> findViewById<Button>(id).setOnClickListener(listener)}
-
+        UserExpr.addView(FormulaEngine.webView)
     }
     //direction: True ->; False <-
 

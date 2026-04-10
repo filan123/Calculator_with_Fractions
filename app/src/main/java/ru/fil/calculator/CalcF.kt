@@ -25,13 +25,6 @@ private fun powIntChecked(value: Int, exp: Int): Int {
     return longToIntChecked(resLong)
 }
 
-private fun shortenIfSafe(fr: MyFraction): MyFraction {
-    // В текущей реализации `MyFraction.shorten()` знак числителя учитывается некорректно,
-    // поэтому чтобы не портить результат, упрощаем только неотрицательный числитель.
-    if (fr.numerator >= 0) fr.shorten()
-    return fr
-}
-
 fun Addition(a: MyFraction, b: MyFraction): MyFraction {
     // a/b + c/d = (ad + bc) / bd
     val num = a.numerator.toLong() * b.denominator.toLong() + b.numerator.toLong() * a.denominator.toLong()
@@ -63,31 +56,47 @@ fun Divide(a: MyFraction, b: MyFraction): MyFraction {
 }
 
 /**
- * Возведение рационального числа в целую степень.
+ * Возведение рационального числа в степень [exp] (целую или дробную, как `MyFraction`).
  *
- * Ожидается, что `exp` - целое число, представленное как `MyFraction` (то есть exp.denominator == 1).
+ * Если точное значение — рациональное число с умеренными целыми числителем и знаменателем, результат
+ * вычисляется точно; иначе используется приближение через `Double` и подбор дроби ([fractionPowApproximate]).
  */
 fun Exponentiation(base: MyFraction, exp: MyFraction): MyFraction {
-    if (exp.denominator != 1) {
-        throw IllegalArgumentException("Exponent must be an integer fraction (denominator == 1)")
+    val (p, q) = reduceFractionPair(exp.numerator, exp.denominator)
+    if (p == 0) return MyFraction(1, 1)
+
+    if (q == 1) {
+        return if (p > 0) {
+            val num = powIntChecked(base.numerator, p)
+            val den = powIntChecked(base.denominator, p)
+            shortenIfSafe(MyFraction(num, den))
+        } else {
+            if (base.numerator == 0) throw DenominatorZeroError()
+            val absP = abs(p)
+            val num = powIntChecked(base.denominator, absP)
+            val den = powIntChecked(base.numerator, absP)
+            shortenIfSafe(MyFraction(num, den))
+        }
     }
 
-    val n = exp.numerator
-    if (n == 0) return MyFraction(1, 1)
-
-    return if (n > 0) {
-        val num = powIntChecked(base.numerator, n)
-        val den = powIntChecked(base.denominator, n)
-        shortenIfSafe(MyFraction(num, den))
-    } else {
-        // base^(-n) = (den/num)^(n)
-        if (base.numerator == 0) throw DenominatorZeroError()
-
-        val absN = abs(n)
-        val num = powIntChecked(base.denominator, absN)
-        val den = powIntChecked(base.numerator, absN)
-        shortenIfSafe(MyFraction(num, den))
+    var bn = base.numerator
+    var bd = base.denominator
+    var pPos = p
+    if (pPos < 0) {
+        if (bn == 0) throw DenominatorZeroError()
+        bn = bd.also { bd = bn }
+        pPos = -pPos
     }
+
+    rationalPowExactOrNull(bn, bd, pPos, q)?.let { return it }
+
+    if (bn < 0 && q % 2 == 0) {
+        throw ArithmeticException(
+            "Для отрицательного основания степень с чётным знаменателем в действительных числах не определена"
+        )
+    }
+
+    return fractionPowApproximate(MyFraction(bn, bd), MyFraction(pPos, q))
 }
 
 /** Вычисление ОПЗ; [internal] — для рекурсивного разбора выражений внутри `\dfrac{...}{...}` в [parser]. */
@@ -158,4 +167,3 @@ fun EVAL(expression: StringBuilder): MyFraction {
 fun EVAL(expression: String): MyFraction {
     return EVAL(StringBuilder(expression))
 }
-
