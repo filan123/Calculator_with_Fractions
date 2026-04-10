@@ -120,9 +120,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 "eval" -> {
                     try {
+                        val expressionBeforeEval = context.text
                         val result = EVAL(context.text)
                         context.text = result.toStringBuilder()
                         context.posOfpipe = context.text.length
+                        FormulaEngine.renderLastExpression(expressionBeforeEval.toString())
                     } catch (e: ExpressionEvaluationError) {
                         Toast.makeText(
                             this@MainActivity,
@@ -153,6 +155,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         FormulaEngine.init(this)
+        FormulaEngine.initLastExpressionWebView(findViewById(R.id.Last_Expression))
 
         val UserExpr = findViewById<WebView>(R.id.Expression)
 

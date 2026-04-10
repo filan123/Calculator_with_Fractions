@@ -11,43 +11,59 @@ object FormulaEngine {
     lateinit var webView: WebView
     private var ready = false
 
+    lateinit var lastExpressionWebView: WebView
+    private var lastReady = false
+
     fun init(context: Context) {
-
         webView = WebView(context)
+        configureKatexWebView(webView) { ready = true }
+    }
 
-        webView.settings.javaScriptEnabled = true
-        webView.settings.domStorageEnabled = true
+    fun initLastExpressionWebView(webView: WebView) {
+        lastExpressionWebView = webView
+        configureKatexWebView(lastExpressionWebView) { lastReady = true }
+    }
 
-        webView.isVerticalScrollBarEnabled = false
-        webView.isHorizontalScrollBarEnabled = false
+    private fun configureKatexWebView(wv: WebView, onPageReady: () -> Unit) {
+        wv.settings.javaScriptEnabled = true
+        wv.settings.domStorageEnabled = true
 
-        webView.setBackgroundColor(Color.TRANSPARENT)
+        wv.isVerticalScrollBarEnabled = false
+        wv.isHorizontalScrollBarEnabled = false
 
-        webView.webViewClient = object : WebViewClient() {
+        wv.setBackgroundColor(Color.TRANSPARENT)
 
+        wv.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                ready = true
+                onPageReady()
             }
         }
 
-        webView.loadUrl("file:///android_asset/katex_engine.html")
+        wv.loadUrl("file:///android_asset/katex_engine.html")
     }
 
+    private fun escapeForJs(latex: String): String =
+        latex.replace("\\", "\\\\").replace("'", "\\'")
+
     fun render(latex: String) {
+        if (!ready) return
 
-        if(!ready) return
-
-        val escaped = latex
-            .replace("\\","\\\\")
-            .replace("'","\\'")
+        val escaped = escapeForJs(latex)
 
         webView.evaluateJavascript(
             "renderFormula('$escaped');",
             null
         )
     }
+
+    fun renderLastExpression(latex: String) {
+        if (!lastReady) return
+
+        val escaped = escapeForJs(latex)
+
+        lastExpressionWebView.evaluateJavascript(
+            "renderFormula('$escaped');",
+            null
+        )
+    }
 }
-
-
-
-
