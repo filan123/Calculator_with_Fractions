@@ -57,7 +57,7 @@ class ExprContext(
             // ^{...}
             token.startsWith("^{") -> {
                 val firstBrace = token.indexOf('{')
-                if (firstBrace >= 0) insertPos + firstBrace + 1 else insertPos + token.length
+                if (firstBrace >= 0) insertPos + firstBrace + 2 else insertPos + token.length
             }
 
             // \sqrt{...}

@@ -27,13 +27,18 @@ fun getPrimeList(numb: Int): MutableList<Int> {
     while (n > 1) {
         val n2 = sqrt(n.toDouble()).toInt()
         var is_success = false
-        for (iDivider in 2..n2 + 1) {
+        var iDivider = 2
+        while (iDivider <= n2 + 1) {
             if (n % iDivider == 0) {
                 is_success = true
                 n /= iDivider
                 lRes.add(iDivider)
+                iDivider = 2
+                continue
             }
+            iDivider++
         }
+
         if (!is_success) {
             lRes.add(n)
             break

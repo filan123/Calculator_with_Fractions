@@ -16,15 +16,18 @@ object FormulaEngine {
 
     fun init(context: Context) {
         webView = WebView(context)
-        configureKatexWebView(webView) { ready = true }
+        prepareKatexWebView(webView, styleInjectScript(FLEX_LAYOUT_CSS)) { ready = true }
     }
 
     fun initLastExpressionWebView(webView: WebView) {
         lastExpressionWebView = webView
-        configureKatexWebView(lastExpressionWebView) { lastReady = true }
+        prepareKatexWebView(
+            lastExpressionWebView,
+            styleInjectScript(FLEX_LAYOUT_CSS + LAST_KATEX_CSS)
+        ) { lastReady = true }
     }
 
-    private fun configureKatexWebView(wv: WebView, onPageReady: () -> Unit) {
+    private fun prepareKatexWebView(wv: WebView, injectScript: String, onReady: () -> Unit) {
         wv.settings.javaScriptEnabled = true
         wv.settings.domStorageEnabled = true
 
@@ -35,7 +38,8 @@ object FormulaEngine {
 
         wv.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                onPageReady()
+                view?.evaluateJavascript(injectScript, null)
+                onReady()
             }
         }
 
@@ -66,4 +70,14 @@ object FormulaEngine {
             null
         )
     }
+
+    private const val FLEX_LAYOUT_CSS =
+        "html,body{height:100%;margin:0;padding:0;overflow:hidden;box-sizing:border-box;}" +
+            "body{display:flex;align-items:flex-end;justify-content:flex-start;padding-left:8px;padding-bottom:4px;}"
+
+    private const val LAST_KATEX_CSS =
+        ".katex,.katex *{color:#A6A6A6!important;}.formula .katex{font-size:0.9em!important;}"
+
+    private fun styleInjectScript(css: String): String =
+        "(function(){var s=document.createElement('style');s.textContent='" + css + "';document.head.appendChild(s);})();"
 }

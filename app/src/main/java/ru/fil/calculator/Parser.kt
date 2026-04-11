@@ -115,7 +115,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
      *
      * Защитные правила:
      * - только соседние дробные токены;
-     * - дробная часть должна быть положительной и правильной (0 < b < d);
+     * - дробная часть должна быть положительной (0 < b <= d);
      * - нулевая целая часть не трогается.
      */
     fun normalizeMixedFractions(items: MutableList<Item>) {
@@ -127,8 +127,8 @@ fun parser(text: StringBuilder): MutableList<Item> {
                 idx++
                 continue
             }
-
-            if (whole.denominator != 1 || frac.denominator == 1) {
+            
+            if (whole.denominator != 1 || frac.denominator == 1 && frac.numerator != 1) {
                 idx++
                 continue
             }

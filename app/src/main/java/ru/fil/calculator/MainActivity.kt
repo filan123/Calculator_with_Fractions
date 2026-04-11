@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import android.widget.GridLayout
@@ -17,11 +18,11 @@ import java.lang.StringBuilder
 class MainActivity : AppCompatActivity() {
     val fractionLatex = "\\dfrac{\\,\\,}{\\,\\,}"
     val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,"\\pm",fractionLatex )
-    val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}")
+    val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}", "\\sqrt{}")
 
     // создаем тэги для кнопок в стиле KaTeX
-    val list_btn = listOf("delete","AC",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","\\pm","eval")
-    val list_add_btn = listOf("\\leftarrow","\\rightarrow","\\sqrt{}", "(", ")", "\\log", "\\ln", "^{2}", "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
+    val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","\\pm","eval")
+    val list_add_btn = listOf("delete","AC","\\sqrt{}", "(", ")", "\\log", "\\ln", "^{2}", "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
 
     lateinit var controller: FormulaController
 
@@ -32,10 +33,11 @@ class MainActivity : AppCompatActivity() {
         "eval" -> "$$=$$"
         fractionLatex->"$$\\dfrac{x}{y}$$"
         "^{2}" -> "$$ x^{2}$$"
-        "\\sin(\\,)" -> "\\sin(x)"
-        "\\cos(\\,)" -> "\\cos(x)"
-        "\\tan(\\,)" -> "\\tan(x)"
-        "\\cot(\\,)" -> "\\cot(x)"
+        "\\sin(\\,)" -> "$$\\sin(x)$$"
+        "\\cos(\\,)" -> "$$\\cos(x)$$"
+        "\\tan(\\,)" -> "$$\\tan(x)$$"
+        "\\cot(\\,)" -> "$$\\cot(x)$$"
+        "\\cdot" -> "$$\\times$$"
         else -> "$$" + tag + "$$"
     }
 
@@ -104,6 +106,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 "AC" -> {
                     context.text.clear()
+                    FormulaEngine.renderLastExpression("")
                     context.posOfpipe = 0
                 }
                 "\\leftarrow"-> {
@@ -159,7 +162,13 @@ class MainActivity : AppCompatActivity() {
 
         val UserExpr = findViewById<WebView>(R.id.Expression)
 
-        UserExpr.addView(FormulaEngine.webView)
+        UserExpr.addView(
+            FormulaEngine.webView,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
     }
     //direction: True ->; False <-
 
