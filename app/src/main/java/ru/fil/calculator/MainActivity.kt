@@ -143,9 +143,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-//            Log.d("posOfpipe: ",posOfpipe.toString())
-//            Log.d("expr: ", expr.length.toString())
-//            UserExpr.renderFormula(expr, posOfpipe)
+
             context.cleanExpr()
             controller.update(InsertCursor(context.text, context.posOfpipe))
         }

@@ -213,6 +213,15 @@ fun parser(text: StringBuilder): MutableList<Item> {
         return result
     }
 
+    /** Позиция после цепочки +/- начинает операнд: скобка, LaTeX-команда (`\` + буква), идентификатор. */
+    fun operandStartsAt(pos: Int): Boolean {
+        if (pos >= s.length) return false
+        val c = s[pos]
+        if (c == '(' || c == '{') return true
+        if (c == '\\') return pos + 1 < s.length && s[pos + 1].isLetter()
+        return c.isLetter()
+    }
+
     while (i < s.length) {
         val ch = s[i]
 
@@ -294,11 +303,6 @@ fun parser(text: StringBuilder): MutableList<Item> {
             continue
         }
 
-        if (ch == '-' && expectOperand) {
-            // Число со знаком '-'
-            // Дальше попробуем распарсить как число.
-        }
-
         // 3) Brackets
         if (ch == '(' || ch == ')' || ch == '{' || ch == '}') {
             res.add(BracketItem(ch))
@@ -331,6 +335,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
 
         // 5) Numbers: digits, '.' или литерал со знаком при expectOperand=true.
         // Важно: после бинарного оператора допускается цепочка '+'/'-' (например 5---5 == 5 - (+5)).
+        // Унарный +/- перед скобкой, \команда или буква: эквивалент 0 - (...) при минусе (см. operandStartsAt).
         if (ch.isDigit() || ch == '.' || (expectOperand && (ch == '-' || ch == '+'))) {
             var j = i
             var sign = 1
@@ -339,8 +344,16 @@ fun parser(text: StringBuilder): MutableList<Item> {
                     if (s[j] == '-') sign *= -1
                     j++
                 }
-                // Цепочка знаков без числа — не литерал (отдаём другим правилам / fallback).
                 if (j >= s.length || (!s[j].isDigit() && s[j] != '.')) {
+                    if (operandStartsAt(j)) {
+                        if (sign < 0) {
+                            res.add(MyFraction(0, 1))
+                            res.add(BinaryOperand("-"))
+                        }
+                        i = j
+                        expectOperand = true
+                        continue
+                    }
                     j = i
                     sign = 1
                 }
