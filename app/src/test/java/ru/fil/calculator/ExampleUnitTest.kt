@@ -104,4 +104,23 @@ class ExampleUnitTest {
         // Важно: между sin и '(' не должно появляться неявное умножение.
         assertTrue(fnItems[3] !is BinaryOperand)
     }
+
+    @Test
+    fun eval_sqrt_integer() {
+        val result = EVAL("\\sqrt{4}")
+        assertEquals(2, result.numerator)
+        assertEquals(1, result.denominator)
+    }
+
+    @Test
+    fun eval_sqrt_fraction_exact() {
+        val result = EVAL("\\sqrt{\\dfrac{9}{4}}")
+        assertEquals(3, result.numerator)
+        assertEquals(2, result.denominator)
+    }
+
+    @Test(expected = ArithmeticException::class)
+    fun eval_sqrt_negative_throws() {
+        EVAL("\\sqrt{-1}")
+    }
 }

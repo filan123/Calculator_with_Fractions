@@ -137,7 +137,31 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
             }
 
             is UnaryOperand -> {
-                throw ExpressionEvaluationError("Неподдерживаемый унарный операнд: ${token.value}")
+                when (token.value) {
+                    "sqrt" -> {
+                        if (stack.size < 1) {
+                            throw ExpressionEvaluationError(
+                                "Не хватает операнда для операции «sqrt»: в стеке ${stack.size}, нужно 1"
+                            )
+                        }
+                        val arg = stack.removeLast()
+                        if (arg.numerator < 0) {
+                            throw ArithmeticException(
+                                "Квадратный корень из отрицательного числа в действительных числах не определён"
+                            )
+                        }
+                        val result = rationalPowExactOrNull(
+                            arg.numerator,
+                            arg.denominator,
+                            1,
+                            2
+                        ) ?: fractionPowApproximate(arg, MyFraction(1, 2))
+                        stack.addLast(result)
+                    }
+                    else -> throw ExpressionEvaluationError(
+                        "Неподдерживаемый унарный операнд: ${token.value}"
+                    )
+                }
             }
 
             is BracketItem -> {

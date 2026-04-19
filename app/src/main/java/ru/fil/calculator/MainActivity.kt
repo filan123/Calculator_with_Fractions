@@ -17,11 +17,11 @@ import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity() {
     val fractionLatex = "\\dfrac{\\,\\,}{\\,\\,}"
-    val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,"\\pm",fractionLatex )
+    val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,fractionLatex )
     val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}", "\\sqrt{}")
 
     // создаем тэги для кнопок в стиле KaTeX
-    val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","\\pm","eval")
+    val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","S \\Leftrightarrow D","eval")
     val list_add_btn = listOf("delete","AC","\\sqrt{}", "(", ")", "\\log", "\\ln", "^{2}", "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
 
     lateinit var controller: FormulaController
