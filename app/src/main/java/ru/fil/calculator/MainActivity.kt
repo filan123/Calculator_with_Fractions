@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         "\\tan(\\,)" -> "$$\\tan(x)$$"
         "\\cot(\\,)" -> "$$\\cot(x)$$"
         "\\cdot" -> "$$\\times$$"
+        "S \\Leftrightarrow D" -> "\$\$S \\leftrightarrow D\$\$"
         else -> "$$" + tag + "$$"
     }
 
@@ -121,11 +122,19 @@ class MainActivity : AppCompatActivity() {
                         context.findNextSpace(true)
                     }
                 }
+                "S \\Leftrightarrow D" -> {
+                    context.useStandardFractionOutput = !context.useStandardFractionOutput
+                    tryParseSingleRationalValue(context.text)?.let { value ->
+                        context.text.clear()
+                        context.text.append(value.toStringBuilder(context.useStandardFractionOutput))
+                        context.posOfpipe = context.text.length
+                    }
+                }
                 "eval" -> {
                     try {
                         val expressionBeforeEval = context.text
                         val result = EVAL(context.text)
-                        context.text = result.toStringBuilder()
+                        context.text = result.toStringBuilder(context.useStandardFractionOutput)
                         context.posOfpipe = context.text.length
                         FormulaEngine.renderLastExpression(expressionBeforeEval.toString())
                     } catch (e: ExpressionEvaluationError) {

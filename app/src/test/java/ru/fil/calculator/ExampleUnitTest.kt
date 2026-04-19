@@ -123,4 +123,29 @@ class ExampleUnitTest {
     fun eval_sqrt_negative_throws() {
         EVAL("\\sqrt{-1}")
     }
+
+    @Test
+    fun fraction_stringBuilder_standard_oneHalf() {
+        val f = MyFraction(1, 2)
+        assertEquals("\\dfrac{1}{2}", f.toStringBuilder(true).toString())
+    }
+
+    @Test
+    fun fraction_stringBuilder_decimal_oneHalf() {
+        val f = MyFraction(1, 2)
+        assertEquals("0.5", f.toStringBuilder(false).toString())
+    }
+
+    @Test
+    fun tryParseSingleRationalValue_rejects_expression_with_plus() {
+        assertNull(tryParseSingleRationalValue(StringBuilder("1+2")))
+    }
+
+    @Test
+    fun tryParseSingleRationalValue_accepts_frac() {
+        val v = tryParseSingleRationalValue(StringBuilder("\\dfrac{1}{2}"))
+        assertNotNull(v)
+        assertEquals(1, v!!.numerator)
+        assertEquals(2, v.denominator)
+    }
 }

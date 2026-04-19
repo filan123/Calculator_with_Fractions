@@ -1,5 +1,6 @@
 package ru.fil.calculator
 
+import java.lang.StringBuilder
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -195,6 +196,24 @@ internal fun rationalPowExactOrNull(baseNum: Int, baseDen: Int, p: Int, q: Int):
     val d = intFromPrimeExponentMap(outDen)
     val fr = if (signNegative) MyFraction(-n, d) else MyFraction(n, d)
     return shortenIfSafe(fr)
+}
+
+/**
+ * Если [text] — одно рациональное значение без бинарных операций и без унарных функций/идентификаторов
+ * на верхнем уровне (например только `\\dfrac{1}{2}`, число или скобки вокруг дроби), возвращает его;
+ * иначе `null`.
+ */
+fun tryParseSingleRationalValue(text: StringBuilder): MyFraction? {
+    return try {
+        val items = parser(StringBuilder(text.toString()))
+        if (items.any { it is BinaryOperand }) return null
+        if (items.any { it is UnaryOperand }) return null
+        val rpn = toRpn(items)
+        if (rpn.any { it is BinaryOperand || it is UnaryOperand }) return null
+        evaluateRpn(rpn)
+    } catch (_: Exception) {
+        null
+    }
 }
 
 /** Степень через [Double] и [doubleToApproxFraction]. */

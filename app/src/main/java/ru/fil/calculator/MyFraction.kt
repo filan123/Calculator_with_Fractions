@@ -1,9 +1,15 @@
 package ru.fil.calculator
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.abs
 
 class MyFraction(var numerator: Int, var denominator: Int) : Item() {
+    private fun toDecimalString(maxScale: Int = 6): String {
+        val decimalValue = BigDecimal(numerator).divide(BigDecimal(denominator), maxScale, RoundingMode.HALF_UP)
+        return decimalValue.stripTrailingZeros().toPlainString()
+    }
+
     init {
         if (denominator<0){
             denominator *= -1
@@ -48,13 +54,25 @@ class MyFraction(var numerator: Int, var denominator: Int) : Item() {
     }
 
 
-
-    fun toStringBuilder():StringBuilder {
-        if (denominator == 1){return StringBuilder(numerator.toString())}
-        else if (isDecimal()){
-            val decimalValue = BigDecimal(numerator).divide(BigDecimal(denominator))
-            return StringBuilder(decimalValue.stripTrailingZeros().toPlainString())
+    /**
+     * @param useStandardFraction true — всегда `\\dfrac{n}{d}` при [denominator] != 1;
+     *   false — десятичная запись (в т.ч. для периодических — с ограниченной точностью).
+     */
+    fun toStringBuilder(useStandardFraction: Boolean): StringBuilder {
+        if (denominator == 1) return StringBuilder(numerator.toString())
+        return if (useStandardFraction) {
+            StringBuilder("\\dfrac{$numerator}{$denominator}")
+        } else {
+            StringBuilder(toDecimalString())
         }
-        else {return StringBuilder("\\dfrac{$numerator}{$denominator}")}
+    }
+
+    fun toStringBuilder(): StringBuilder {
+        if (denominator == 1) return StringBuilder(numerator.toString())
+        return if (isDecimal()) {
+            StringBuilder(toDecimalString())
+        } else {
+            StringBuilder("\\dfrac{$numerator}{$denominator}")
+        }
     }
 }

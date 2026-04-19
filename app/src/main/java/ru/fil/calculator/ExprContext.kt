@@ -28,6 +28,9 @@ class ExprContext(
         posOfpipe = initialPosOfpipe
     }
 
+    /** true — режим S (вывод как `\\dfrac{n}{d}`), false — режим D (десятичная запись). */
+    var useStandardFractionOutput: Boolean = true
+
     // direction: True -> ; false <-
     fun findNextSpace(direction: Boolean): Int {
         posOfpipe = findNextSpaceInternal(posOfpipe, text.toString(), direction)
