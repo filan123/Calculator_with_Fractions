@@ -19,8 +19,8 @@ class ExampleUnitTest {
         val items = parser(StringBuilder("2\\dfrac{1}{3}"))
         assertEquals(1, items.size)
         val token = items[0] as MyFraction
-        assertEquals(7, token.numerator)
-        assertEquals(3, token.denominator)
+        assertEquals(7L, token.numerator)
+        assertEquals(3L, token.denominator)
     }
 
     @Test
@@ -28,15 +28,15 @@ class ExampleUnitTest {
         val items = parser(StringBuilder("-2\\dfrac{1}{3}"))
         assertEquals(1, items.size)
         val token = items[0] as MyFraction
-        assertEquals(-7, token.numerator)
-        assertEquals(3, token.denominator)
+        assertEquals(-7L, token.numerator)
+        assertEquals(3L, token.denominator)
     }
 
     @Test
     fun eval_sumOfMixedFractions() {
         val result = EVAL("1\\dfrac{1}{2}+2\\dfrac{2}{3}")
-        assertEquals(25, result.numerator)
-        assertEquals(6, result.denominator)
+        assertEquals(25L, result.numerator)
+        assertEquals(6L, result.denominator)
     }
 
     @Test
@@ -44,8 +44,8 @@ class ExampleUnitTest {
         val items = parser(StringBuilder("\\dfrac{5}{7}"))
         assertEquals(1, items.size)
         val token = items[0] as MyFraction
-        assertEquals(5, token.numerator)
-        assertEquals(7, token.denominator)
+        assertEquals(5L, token.numerator)
+        assertEquals(7L, token.denominator)
     }
 
     @Test
@@ -53,29 +53,29 @@ class ExampleUnitTest {
         val items = parser(StringBuilder("\\dfrac{\\,}{\\,}"))
         assertEquals(1, items.size)
         val token = items[0] as MyFraction
-        assertEquals(0, token.numerator)
-        assertEquals(1, token.denominator)
+        assertEquals(0L, token.numerator)
+        assertEquals(1L, token.denominator)
     }
 
     @Test
     fun eval_implicitMultiplication_numberBracket() {
         val result = EVAL("2(3+4)")
-        assertEquals(14, result.numerator)
-        assertEquals(1, result.denominator)
+        assertEquals(14L, result.numerator)
+        assertEquals(1L, result.denominator)
     }
 
     @Test
     fun eval_implicitMultiplication_bracketNumber() {
         val result = EVAL("(1+2)3")
-        assertEquals(9, result.numerator)
-        assertEquals(1, result.denominator)
+        assertEquals(9L, result.numerator)
+        assertEquals(1L, result.denominator)
     }
 
     @Test
     fun eval_implicitMultiplication_bracketBracket() {
         val result = EVAL("(1+2)(3+4)")
-        assertEquals(21, result.numerator)
-        assertEquals(1, result.denominator)
+        assertEquals(21L, result.numerator)
+        assertEquals(1L, result.denominator)
     }
 
     @Test
@@ -108,15 +108,15 @@ class ExampleUnitTest {
     @Test
     fun eval_sqrt_integer() {
         val result = EVAL("\\sqrt{4}")
-        assertEquals(2, result.numerator)
-        assertEquals(1, result.denominator)
+        assertEquals(2L, result.numerator)
+        assertEquals(1L, result.denominator)
     }
 
     @Test
     fun eval_sqrt_fraction_exact() {
         val result = EVAL("\\sqrt{\\dfrac{9}{4}}")
-        assertEquals(3, result.numerator)
-        assertEquals(2, result.denominator)
+        assertEquals(3L, result.numerator)
+        assertEquals(2L, result.denominator)
     }
 
     @Test(expected = ArithmeticException::class)
@@ -145,7 +145,7 @@ class ExampleUnitTest {
     fun tryParseSingleRationalValue_accepts_frac() {
         val v = tryParseSingleRationalValue(StringBuilder("\\dfrac{1}{2}"))
         assertNotNull(v)
-        assertEquals(1, v!!.numerator)
-        assertEquals(2, v.denominator)
+        assertEquals(1L, v!!.numerator)
+        assertEquals(2L, v.denominator)
     }
 }

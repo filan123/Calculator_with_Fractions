@@ -250,7 +250,7 @@ class ExprContext(
             // 2) Позиция внутри имени команды: \f|rac, \frac|
             // Ищем начало "слова" слева от pos
             var i = pos - 1
-            while (i >= 0 && text[i].isLetter()) i--
+            while (i >= 0 && text[i].isLetter() && (text[i+1] == '{' || text[i+1].isLetter())) i--
 
             // Если перед буквами стоит '\', то это имя команды
             if (i >= 0 && text[i] == '\\') {

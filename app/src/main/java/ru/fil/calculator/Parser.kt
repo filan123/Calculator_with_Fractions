@@ -46,12 +46,11 @@ fun parser(text: StringBuilder): MutableList<Item> {
 
         if (!trimmed.contains('.')) {
             val v = trimmed.toLongOrNull() ?: return null
-            if (v < Int.MIN_VALUE || v > Int.MAX_VALUE) return null
-            return MyFraction(v.toInt(), 1)
+            return MyFraction(v, 1)
         }
 
-        val sign = if (trimmed.startsWith("-")) -1 else 1
-        val absToken = if (sign == -1) trimmed.substring(1) else trimmed
+        val sign = if (trimmed.startsWith("-")) -1L else 1L
+        val absToken = if (sign == -1L) trimmed.substring(1) else trimmed
         val parts = absToken.split('.')
         val intPart = parts.getOrNull(0).orEmpty()
         val fracPart = parts.getOrNull(1).orEmpty()
@@ -61,13 +60,12 @@ fun parser(text: StringBuilder): MutableList<Item> {
         val fracPartNorm = if (fracPart.isEmpty()) 0L else fracPart.toLong()
 
         val denomLong = powLong(10L, k)
-        if (denomLong < 1 || denomLong > Int.MAX_VALUE.toLong()) return null
+        if (denomLong < 1L) return null
 
         val numeratorLong = intPartNorm * denomLong + fracPartNorm
         val numeratorSigned = numeratorLong * sign
-        if (numeratorSigned < Int.MIN_VALUE || numeratorSigned > Int.MAX_VALUE) return null
 
-        return MyFraction(numeratorSigned.toInt(), denomLong.toInt()).also { it.shorten() }
+        return MyFraction(numeratorSigned, denomLong).also { it.shorten() }
     }
 
     /**
@@ -128,12 +126,12 @@ fun parser(text: StringBuilder): MutableList<Item> {
                 continue
             }
             
-            if (whole.denominator != 1 || frac.denominator == 1 && frac.numerator != 1) {
+            if (whole.denominator != 1L || frac.denominator == 1L && frac.numerator != 1L) {
                 idx++
                 continue
             }
 
-            if (whole.numerator == 0) {
+            if (whole.numerator == 0L) {
                 idx++
                 continue
             }
@@ -141,7 +139,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             val b = frac.numerator
             val d = frac.denominator
 
-            if (b <= 0) {
+            if (b <= 0L) {
                 idx++
                 continue
             }
@@ -151,12 +149,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             val denLong = d.toLong()
             val numLong = sign * (absWhole * denLong + b.toLong())
 
-            if (numLong !in Int.MIN_VALUE.toLong()..Int.MAX_VALUE.toLong()) {
-                idx++
-                continue
-            }
-
-            items[idx] = MyFraction(numLong.toInt(), d)
+            items[idx] = MyFraction(numLong, d)
             items.removeAt(idx + 1)
         }
     }
@@ -178,11 +171,11 @@ fun parser(text: StringBuilder): MutableList<Item> {
     fun isMixedPair(left: Item, right: Item): Boolean {
         val whole = left as? MyFraction ?: return false
         val frac = right as? MyFraction ?: return false
-        if (whole.denominator != 1 || frac.denominator == 1) return false
-        if (whole.numerator == 0) return false
+        if (whole.denominator != 1L || frac.denominator == 1L) return false
+        if (whole.numerator == 0L) return false
         val b = frac.numerator
         val d = frac.denominator
-        return b > 0 && abs(b) < d
+        return b > 0L && abs(b) < d
     }
 
     fun insertImplicitMultiplication(items: MutableList<Item>): MutableList<Item> {
@@ -255,7 +248,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             val den = parseFracGroupToFraction(denStr)
 
             // Представляем \dfrac{a}{b} как рациональное число: a/b.
-            val token = if (den.numerator == 0) {
+            val token = if (den.numerator == 0L) {
                 // Чтобы парсер не падал на незаполненном шаблоне `\dfrac{\,\,}{\,\,}`.
                 MyFraction(0, 1)
             } else {

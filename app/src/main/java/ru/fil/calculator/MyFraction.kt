@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.abs
 
-class MyFraction(var numerator: Int, var denominator: Int) : Item() {
+class MyFraction(var numerator: Long, var denominator: Long) : Item() {
     private fun toDecimalString(maxScale: Int = 6): String {
         val decimalValue = BigDecimal(numerator).divide(BigDecimal(denominator), maxScale, RoundingMode.HALF_UP)
         return decimalValue.stripTrailingZeros().toPlainString()
@@ -12,15 +12,15 @@ class MyFraction(var numerator: Int, var denominator: Int) : Item() {
 
     init {
         if (denominator<0){
-            denominator *= -1
-            numerator *= -1
+            denominator *= -1L
+            numerator *= -1L
         }
-        if (denominator == 0){
+        if (denominator == 0L){
             throw DenominatorZeroError()
         }
     }
     fun shorten(){
-        if (denominator == 1){ }
+        if (denominator == 1L){ }
         else {
             val prime_list_num = getPrimeList(numerator)
             val prime_list_den = getPrimeList(denominator)
@@ -41,16 +41,16 @@ class MyFraction(var numerator: Int, var denominator: Int) : Item() {
         }
 
     }
-    fun change_den(multiplier:Int){
+    fun change_den(multiplier: Long){
         numerator *= multiplier
         denominator *= multiplier
     }
 
     fun isDecimal(): Boolean {
         var d = denominator / gcd(abs(numerator), denominator)
-        while (d % 2 == 0) d /= 2
-        while (d % 5 == 0) d /= 5
-        return d == 1
+        while (d % 2L == 0L) d /= 2L
+        while (d % 5L == 0L) d /= 5L
+        return d == 1L
     }
 
 
@@ -59,7 +59,7 @@ class MyFraction(var numerator: Int, var denominator: Int) : Item() {
      *   false — десятичная запись (в т.ч. для периодических — с ограниченной точностью).
      */
     fun toStringBuilder(useStandardFraction: Boolean): StringBuilder {
-        if (denominator == 1) return StringBuilder(numerator.toString())
+        if (denominator == 1L) return StringBuilder(numerator.toString())
         return if (useStandardFraction) {
             StringBuilder("\\dfrac{$numerator}{$denominator}")
         } else {

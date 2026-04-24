@@ -2,57 +2,56 @@ package ru.fil.calculator
 
 import kotlin.math.abs
 
-private fun powIntToLong(value: Int, exp: Int): Long {
-    require(exp >= 0) { "Exponent must be non-negative in powIntToLong" }
+private fun powLong(value: Long, exp: Long): Long {
+    require(exp >= 0L) { "Exponent must be non-negative in powLong" }
 
     var result = 1L
-    var base = value.toLong()
-    repeat(exp) {
+    val base = value
+    var i = 0L
+    while (i < exp) {
         result *= base
+        i++
     }
     return result
 }
 
-private fun longToIntChecked(value: Long): Int {
-    if (value < Int.MIN_VALUE || value > Int.MAX_VALUE) {
-        throw ArithmeticException("Int overflow: $value")
-    }
-    return value.toInt()
+private fun longToLongChecked(value: Long): Long {
+    return value
 }
 
-private fun powIntChecked(value: Int, exp: Int): Int {
-    val resLong = powIntToLong(value, exp)
-    return longToIntChecked(resLong)
+private fun powLongChecked(value: Long, exp: Long): Long {
+    val resLong = powLong(value, exp)
+    return longToLongChecked(resLong)
 }
 
 fun Addition(a: MyFraction, b: MyFraction): MyFraction {
     // a/b + c/d = (ad + bc) / bd
-    val num = a.numerator.toLong() * b.denominator.toLong() + b.numerator.toLong() * a.denominator.toLong()
-    val den = a.denominator.toLong() * b.denominator.toLong()
-    return shortenIfSafe(MyFraction(longToIntChecked(num), longToIntChecked(den)))
+    val num = a.numerator * b.denominator + b.numerator * a.denominator
+    val den = a.denominator * b.denominator
+    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
 }
 
 fun Subtraction(a: MyFraction, b: MyFraction): MyFraction {
     // a/b - c/d = (ad - bc) / bd
-    val num = a.numerator.toLong() * b.denominator.toLong() - b.numerator.toLong() * a.denominator.toLong()
-    val den = a.denominator.toLong() * b.denominator.toLong()
-    return shortenIfSafe(MyFraction(longToIntChecked(num), longToIntChecked(den)))
+    val num = a.numerator * b.denominator - b.numerator * a.denominator
+    val den = a.denominator * b.denominator
+    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
 }
 
 fun Multiply(a: MyFraction, b: MyFraction): MyFraction {
     // a/b * c/d = ac / bd
-    val num = a.numerator.toLong() * b.numerator.toLong()
-    val den = a.denominator.toLong() * b.denominator.toLong()
-    return shortenIfSafe(MyFraction(longToIntChecked(num), longToIntChecked(den)))
+    val num = a.numerator * b.numerator
+    val den = a.denominator * b.denominator
+    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
 }
 
 fun Divide(a: MyFraction, b: MyFraction): MyFraction {
     // a/b / c/d = ad / bc
-    if (b.numerator == 0) throw DenominatorZeroError()
+    if (b.numerator == 0L) throw DenominatorZeroError()
 
-    val num = a.numerator.toLong() * b.denominator.toLong()
-    val den = a.denominator.toLong() * b.numerator.toLong()
-    return shortenIfSafe(MyFraction(longToIntChecked(num), longToIntChecked(den)))
+    val num = a.numerator * b.denominator
+    val den = a.denominator * b.numerator
+    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
 }
 
 /**
@@ -63,18 +62,18 @@ fun Divide(a: MyFraction, b: MyFraction): MyFraction {
  */
 fun Exponentiation(base: MyFraction, exp: MyFraction): MyFraction {
     val (p, q) = reduceFractionPair(exp.numerator, exp.denominator)
-    if (p == 0) return MyFraction(1, 1)
+    if (p == 0L) return MyFraction(1, 1)
 
-    if (q == 1) {
+    if (q == 1L) {
         return if (p > 0) {
-            val num = powIntChecked(base.numerator, p)
-            val den = powIntChecked(base.denominator, p)
+            val num = powLongChecked(base.numerator, p)
+            val den = powLongChecked(base.denominator, p)
             shortenIfSafe(MyFraction(num, den))
         } else {
-            if (base.numerator == 0) throw DenominatorZeroError()
+            if (base.numerator == 0L) throw DenominatorZeroError()
             val absP = abs(p)
-            val num = powIntChecked(base.denominator, absP)
-            val den = powIntChecked(base.numerator, absP)
+            val num = powLongChecked(base.denominator, absP)
+            val den = powLongChecked(base.numerator, absP)
             shortenIfSafe(MyFraction(num, den))
         }
     }
@@ -83,14 +82,14 @@ fun Exponentiation(base: MyFraction, exp: MyFraction): MyFraction {
     var bd = base.denominator
     var pPos = p
     if (pPos < 0) {
-        if (bn == 0) throw DenominatorZeroError()
+        if (bn == 0L) throw DenominatorZeroError()
         bn = bd.also { bd = bn }
         pPos = -pPos
     }
 
     rationalPowExactOrNull(bn, bd, pPos, q)?.let { return it }
 
-    if (bn < 0 && q % 2 == 0) {
+    if (bn < 0 && q % 2L == 0L) {
         throw ArithmeticException(
             "Для отрицательного основания степень с чётным знаменателем в действительных числах не определена"
         )

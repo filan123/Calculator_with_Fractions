@@ -18,23 +18,23 @@ fun latexBinaryOpLenBefore(text: CharSequence, endExclusive: Int): Int {
     return 0
 }
 
-fun getPrimeList(numb: Int): MutableList<Int> {
-    val lRes = mutableListOf<Int>()
+fun getPrimeList(numb: Long): MutableList<Long> {
+    val lRes = mutableListOf<Long>()
     var n = numb
     if (n < 0) {
-        lRes.add(-1)
-        n *= -1
+        lRes.add(-1L)
+        n *= -1L
     }
-    while (n > 1) {
-        val n2 = sqrt(n.toDouble()).toInt()
+    while (n > 1L) {
+        val n2 = sqrt(n.toDouble()).toLong()
         var is_success = false
-        var iDivider = 2
-        while (iDivider <= n2 + 1) {
-            if (n % iDivider == 0) {
+        var iDivider = 2L
+        while (iDivider <= n2 + 1L) {
+            if (n % iDivider == 0L) {
                 is_success = true
                 n /= iDivider
                 lRes.add(iDivider)
-                iDivider = 2
+                iDivider = 2L
                 continue
             }
             iDivider++
@@ -45,14 +45,14 @@ fun getPrimeList(numb: Int): MutableList<Int> {
             break
         }
     }
-    if (n == 0) {
+    if (n == 0L) {
         lRes.add(n)
     }
     return lRes
 }
 
-fun multList(listN: MutableList<Int>): Int {
-    var res = 1
+fun multList(listN: MutableList<Long>): Long {
+    var res = 1L
     for (v in listN) {
         res *= v
     }
@@ -60,10 +60,10 @@ fun multList(listN: MutableList<Int>): Int {
 }
 
 /** НОД для целых; аргументы по модулю (устойчиво к отрицательным). */
-fun gcd(a: Int, b: Int): Int {
+fun gcd(a: Long, b: Long): Long {
     var x = abs(a)
     var y = abs(b)
-    while (y != 0) {
+    while (y != 0L) {
         val t = y
         y = x % y
         x = t
@@ -72,7 +72,7 @@ fun gcd(a: Int, b: Int): Int {
 }
 
 /** Несократимая пара (числитель, знаменатель), знаменатель > 0. */
-internal fun reduceFractionPair(num: Int, den: Int): Pair<Int, Int> {
+internal fun reduceFractionPair(num: Long, den: Long): Pair<Long, Long> {
     if (den < 0) return reduceFractionPair(-num, -den)
     val g = gcd(num, den)
     return num / g to den / g
@@ -81,32 +81,32 @@ internal fun reduceFractionPair(num: Int, den: Int): Pair<Int, Int> {
 /**
  * Показатели простых в разложении [|value|]; для |value| ≤ 1 возвращается пустая карта.
  */
-internal fun primeExponentMap(value: Int): MutableMap<Int, Int> {
-    val m = mutableMapOf<Int, Int>()
+internal fun primeExponentMap(value: Long): MutableMap<Long, Int> {
+    val m = mutableMapOf<Long, Int>()
     var n = abs(value)
-    if (n <= 1) return m
-    var d = 2
+    if (n <= 1L) return m
+    var d = 2L
     while (d * d <= n) {
-        while (n % d == 0) {
+        while (n % d == 0L) {
             m[d] = (m[d] ?: 0) + 1
             n /= d
         }
         d++
     }
-    if (n > 1) m[n] = (m[n] ?: 0) + 1
+    if (n > 1L) m[n] = (m[n] ?: 0) + 1
     return m
 }
 
-/** Произведение ∏ p^e по карте; при переполнении Int — [ArithmeticException]. */
-internal fun intFromPrimeExponentMap(map: Map<Int, Int>): Int {
+/** Произведение ∏ p^e по карте; при переполнении Long — [ArithmeticException]. */
+internal fun longFromPrimeExponentMap(map: Map<Long, Int>): Long {
     var r = 1L
     for ((p, e) in map) {
         repeat(e) {
             r *= p
-            if (r > Int.MAX_VALUE) throw ArithmeticException("Int overflow")
+            if (r < 0L) throw ArithmeticException("Long overflow")
         }
     }
-    return r.toInt()
+    return r
 }
 
 /**
@@ -123,22 +123,22 @@ internal fun shortenIfSafe(fr: MyFraction): MyFraction {
  */
 internal fun doubleToApproxFraction(value: Double, maxDen: Int = 1_000_000): MyFraction {
     if (!value.isFinite()) throw ArithmeticException("Некорректный результат степени")
-    val sign = if (value < 0) -1 else 1
+    val sign = if (value < 0) -1L else 1L
     val x = abs(value)
     if (x == 0.0) return MyFraction(0, 1)
 
-    var lN = 0
-    var lD = 1
-    var rN = 1
-    var rD = 0
-    var bestN = 1
-    var bestD = 1
+    var lN = 0L
+    var lD = 1L
+    var rN = 1L
+    var rD = 0L
+    var bestN = 1L
+    var bestD = 1L
     var bestDiff = abs(x - 1.0)
 
     repeat(80) {
         val mN = lN + rN
         val mD = lD + rD
-        if (mD > maxDen || mN > Int.MAX_VALUE / 2) return@repeat
+        if (mD > maxDen.toLong() || mN < 0L) return@repeat
         val med = mN.toDouble() / mD
         val diff = abs(med - x)
         if (diff < bestDiff) {
@@ -164,23 +164,23 @@ internal fun doubleToApproxFraction(value: Double, maxDen: Int = 1_000_000): MyF
  * Точное (a/b)^(p/q), если все (e·p)/q целые; иначе `null`.
  * Знаменатель основания > 0; p > 0; q > 1.
  */
-internal fun rationalPowExactOrNull(baseNum: Int, baseDen: Int, p: Int, q: Int): MyFraction? {
+internal fun rationalPowExactOrNull(baseNum: Long, baseDen: Long, p: Long, q: Long): MyFraction? {
     val (a, b) = reduceFractionPair(baseNum, baseDen)
-    if (a == 0) return MyFraction(0, 1)
+    if (a == 0L) return MyFraction(0, 1)
 
     var signNegative = false
     var aa = a
     if (aa < 0) {
-        if (q % 2 == 0) return null
-        if (p % 2 != 0) signNegative = true
+        if (q % 2L == 0L) return null
+        if (p % 2L != 0L) signNegative = true
         aa = -aa
     }
 
     val numMap = primeExponentMap(aa)
     val denMap = primeExponentMap(b)
     val primes = numMap.keys union denMap.keys
-    val outNum = mutableMapOf<Int, Int>()
-    val outDen = mutableMapOf<Int, Int>()
+    val outNum = mutableMapOf<Long, Int>()
+    val outDen = mutableMapOf<Long, Int>()
     for (prime in primes) {
         val e = (numMap[prime] ?: 0) - (denMap[prime] ?: 0)
         if (e == 0) continue
@@ -192,8 +192,8 @@ internal fun rationalPowExactOrNull(baseNum: Int, baseDen: Int, p: Int, q: Int):
             k < 0 -> outDen[prime] = (outDen[prime] ?: 0) - k
         }
     }
-    val n = intFromPrimeExponentMap(outNum)
-    val d = intFromPrimeExponentMap(outDen)
+    val n = longFromPrimeExponentMap(outNum)
+    val d = longFromPrimeExponentMap(outDen)
     val fr = if (signNegative) MyFraction(-n, d) else MyFraction(n, d)
     return shortenIfSafe(fr)
 }
