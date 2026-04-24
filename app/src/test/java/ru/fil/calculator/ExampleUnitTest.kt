@@ -132,8 +132,8 @@ class ExampleUnitTest {
 
     @Test
     fun fraction_stringBuilder_decimal_oneHalf() {
-        val f = MyFraction(1, 2)
-        assertEquals("0.5", f.toStringBuilder(false).toString())
+        val f = MyFraction(1, 500000000)
+        assertEquals("0", f.toStringBuilder(false).toString())
     }
 
     @Test

@@ -67,12 +67,12 @@ class MyFraction(var numerator: Int, var denominator: Int) : Item() {
         }
     }
 
-    fun toStringBuilder(): StringBuilder {
-        if (denominator == 1) return StringBuilder(numerator.toString())
-        return if (isDecimal()) {
-            StringBuilder(toDecimalString())
-        } else {
-            StringBuilder("\\dfrac{$numerator}{$denominator}")
-        }
-    }
+//    fun toStringBuilder(): StringBuilder {
+//        if (denominator == 1) return StringBuilder(numerator.toString())
+//        return if (isDecimal()) {
+//            StringBuilder(toDecimalString())
+//        } else {
+//            StringBuilder("\\dfrac{$numerator}{$denominator}")
+//        }
+//    }
 }
