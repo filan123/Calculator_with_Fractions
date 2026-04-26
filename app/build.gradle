@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "ru.fil.calculator"
         minSdk 21
-        targetSdk 31
+         targetSdk 31
         versionCode 1
         versionName "1.0"
 
@@ -43,8 +43,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.github.judemanutd:katexview:1.0.2'
 
 }
