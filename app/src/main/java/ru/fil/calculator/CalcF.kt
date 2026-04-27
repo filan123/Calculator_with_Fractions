@@ -91,7 +91,7 @@ fun Exponentiation(base: MyFraction, exp: MyFraction): MyFraction {
 
     if (bn < 0 && q % 2L == 0L) {
         throw ArithmeticException(
-            "Для отрицательного основания степень с чётным знаменателем в действительных числах не определена"
+            "Для отрицательного основания степень с чётным знаменателем не определена"
         )
     }
 
@@ -146,7 +146,7 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
                         val arg = stack.removeLast()
                         if (arg.numerator < 0) {
                             throw ArithmeticException(
-                                "Квадратный корень из отрицательного числа в действительных числах не определён"
+                                "Квадратный корень из отрицательного числа не определён"
                             )
                         }
                         val result = rationalPowExactOrNull(

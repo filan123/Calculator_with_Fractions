@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     // создаем тэги для кнопок в стиле KaTeX
     val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","S \\Leftrightarrow D","eval")
-    val list_add_btn = listOf("delete","AC","\\sqrt{}", "(", ")", "\\log", "\\ln", "^{2}", "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
+    val list_add_btn = listOf("delete","AC","\\sqrt{}", "(", ")", "*\\log*", "*\\ln*", "^{2}", "*\\sin(\\,)*", "*\\cos(\\,)*", "*\\tan(\\,)*","*\\cot(\\,)*")
 
     lateinit var controller: FormulaController
 
@@ -57,10 +57,7 @@ class MainActivity : AppCompatActivity() {
             override fun onInterceptTouchEvent(ev: MotionEvent): Boolean = true
 
             override fun onTouchEvent(event: MotionEvent): Boolean {
-                if (event.actionMasked == MotionEvent.ACTION_UP) {
-                    performClick()
-                }
-                return true
+                return super.onTouchEvent(event)
             }
         }.apply {
             id = View.generateViewId()
@@ -149,6 +146,13 @@ class MainActivity : AppCompatActivity() {
                             e.message ?: "Деление на ноль",
                             Toast.LENGTH_LONG
                         ).show()
+                    } catch (e: ArithmeticException) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            e.message ?: "Алгебраическая ошибка",
+                            Toast.LENGTH_LONG
+                        ).show()
+
                     }
                 }
             }
