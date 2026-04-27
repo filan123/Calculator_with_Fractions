@@ -1,4 +1,4 @@
-This project is worth ignoring, as I made it for school and for learning skills. \n
+This project is worth ignoring, as I made it for school and for learning skills.
 Это калькулятор на андроид, реализованы:
 Стабильный интерфейс (стрелки, delete, all clear, красивая визуализация с помощью katex),
 функции сложения, умножения, деления, вычитания, возведение в дробную степень, квадратный корень, перевод в станданртную и в десятичную запись для дробей,
