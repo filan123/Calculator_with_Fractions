@@ -54,12 +54,11 @@ fun Divide(a: MyFraction, b: MyFraction): MyFraction {
     return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
 }
 
-/**
- * Возведение рационального числа в степень [exp] (целую или дробную, как `MyFraction`).
- *
- * Если точное значение — рациональное число с умеренными целыми числителем и знаменателем, результат
- * вычисляется точно; иначе используется приближение через `Double` и подбор дроби ([fractionPowApproximate]).
- */
+
+//Возведение рационального числа в степень exp (целую или дробную, как `MyFraction`).
+
+//Если точное значение — рациональное число с умеренными целыми числителем и знаменателем, результат
+//вычисляется точно; иначе используется приближение через `Double` и подбор дроби (fractionPowApproximate).
 fun Exponentiation(base: MyFraction, exp: MyFraction): MyFraction {
     val (p, q) = reduceFractionPair(exp.numerator, exp.denominator)
     if (p == 0L) return MyFraction(1, 1)
@@ -98,7 +97,7 @@ fun Exponentiation(base: MyFraction, exp: MyFraction): MyFraction {
     return fractionPowApproximate(MyFraction(bn, bd), MyFraction(pPos, q))
 }
 
-/** Вычисление ОПЗ; [internal] — для рекурсивного разбора выражений внутри `\dfrac{...}{...}` в [parser]. */
+// Вычисление ОПЗ; internal — для рекурсивного разбора выражений внутри `\dfrac{...}{...}` в parser.
 internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
     if (rpnItems.isEmpty()) {
         throw ExpressionEvaluationError("Пустое выражение: нет операндов и операций")
@@ -140,7 +139,7 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
                     "sqrt" -> {
                         if (stack.size < 1) {
                             throw ExpressionEvaluationError(
-                                "Не хватает операнда для операции «sqrt»: в стеке ${stack.size}, нужно 1"
+                                "Не хватает операнда для квадратного корня в стеке ${stack.size}, нужно 1"
                             )
                         }
                         val arg = stack.removeLast()

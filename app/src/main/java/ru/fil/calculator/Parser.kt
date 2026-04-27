@@ -206,7 +206,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
         return result
     }
 
-    /** Позиция после цепочки +/- начинает операнд: скобка, LaTeX-команда (`\` + буква), идентификатор. */
+//     Позиция после цепочки +/- начинает операнд: скобка, LaTeX-команда (`\` + буква), идетнификатор.
     fun operandStartsAt(pos: Int): Boolean {
         if (pos >= s.length) return false
         val c = s[pos]
@@ -223,13 +223,13 @@ fun parser(text: StringBuilder): MutableList<Item> {
             continue
         }
 
-        // Пропускаем \, и \; как "технические" пробелы.
+        // Пропуспим \, и \; как "технические" пробелы.
         if (isLatexSpace(i)) {
             skipLatexSpace()
             continue
         }
 
-        // 1) Fraction: \dfrac{...}{...}
+        // 1) Дроби: \dfrac{...}{...}
         if (s.startsWith("\\dfrac", i) || s.startsWith("\\frac", i)) {
             val cmdLen = if (s.startsWith("\\dfrac", i)) "\\dfrac".length else "\\frac".length
             i += cmdLen
@@ -263,7 +263,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             continue
         }
 
-        // 2) Binary operators
+        // 2) бинарные операторы
         if (s.startsWith("\\cdot", i)) {
             res.add(BinaryOperand("\\cdot"))
             i += "\\cdot".length
@@ -296,7 +296,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             continue
         }
 
-        // 3) Brackets
+        // 3) скобки
         if (ch == '(' || ch == ')' || ch == '{' || ch == '}') {
             res.add(BracketItem(ch))
             i++
@@ -304,7 +304,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             continue
         }
 
-        // 4) Unary commands / identifiers: `\sqrt`, `\sin`, `x`, ...
+        // 4) Унарная команды: `\sqrt`, `\sin`, `x`, ...
         if (ch == '\\') {
             val start = i + 1
             if (start < s.length && s[start].isLetter()) {
@@ -326,9 +326,9 @@ fun parser(text: StringBuilder): MutableList<Item> {
             continue
         }
 
-        // 5) Numbers: digits, '.' или литерал со знаком при expectOperand=true.
+        // 5) Числа: digits, '.' или литерал со знаком при expectOperand=true.
         // Важно: после бинарного оператора допускается цепочка '+'/'-' (например 5---5 == 5 - (+5)).
-        // Унарный +/- перед скобкой, \команда или буква: эквивалент 0 - (...) при минусе (см. operandStartsAt).
+        // Унарный +/- перед скобкой, \команда или буква: эквивалент 0 - (...) при минусе.
         if (ch.isDigit() || ch == '.' || (expectOperand && (ch == '-' || ch == '+'))) {
             var j = i
             var sign = 1
@@ -383,7 +383,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             }
         }
 
-        // 6) Fallback: неизвестный символ — пропускаем.
+        // 6)неизвестный символ — пропускаем.
         i++
     }
 

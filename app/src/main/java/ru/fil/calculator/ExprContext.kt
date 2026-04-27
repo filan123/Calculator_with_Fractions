@@ -133,10 +133,7 @@ class ExprContext(
         return posOfpipe
     }
 
-    /**
-     * Чистит выражение (аналог старой cleanExpr).
-     * После изменений гарантирует корректность `posOfpipe`.
-     */
+    //Чистит выражение от пробелов
     fun cleanExpr(): StringBuilder {
         fun adjustInsert(insertPos: Int, len: Int) {
             if (len <= 0) return
