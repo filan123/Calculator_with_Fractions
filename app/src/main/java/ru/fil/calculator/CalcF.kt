@@ -128,7 +128,7 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
                     "\\cdot" -> Multiply(left, right)
                     "\\div" -> Divide(left, right)
                     "^" -> Exponentiation(left, right)
-                    "\\pm" -> Addition(left, right)
+//                    "\\pm" -> Addition(left, right)
                     else -> throw ExpressionEvaluationError("Неподдерживаемая операция: ${token.value}")
                 }
                 stack.addLast(result)

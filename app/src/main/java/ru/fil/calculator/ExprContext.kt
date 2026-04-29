@@ -60,8 +60,17 @@ class ExprContext(
             // ^{...}
             token.startsWith("^{") -> {
                 val firstBrace = token.indexOf('{')
+                if (firstBrace >= 0) insertPos + firstBrace + 1 else insertPos + token.length
+            }
+            token.startsWith("^{2") -> {
+                val firstBrace = token.indexOf('{')
                 if (firstBrace >= 0) insertPos + firstBrace + 2 else insertPos + token.length
             }
+            token.startsWith("^{3") -> {
+                val firstBrace = token.indexOf('{')
+                if (firstBrace >= 0) insertPos + firstBrace + 2 else insertPos + token.length
+            }
+
 
             // \sqrt{...}
             token.startsWith("\\sqrt") -> {

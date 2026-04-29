@@ -41,7 +41,7 @@ class MyFraction(var numerator: Long, var denominator: Long) : Item() {
         }
 
     }
-    fun change_den(multiplier: Long){
+    fun changeDen(multiplier: Long){
         numerator *= multiplier
         denominator *= multiplier
     }

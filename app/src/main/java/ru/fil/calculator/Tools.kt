@@ -59,7 +59,7 @@ fun multList(listN: MutableList<Long>): Long {
     return res
 }
 
-/** НОД для целых; аргументы по модулю . */
+
 fun gcd(a: Long, b: Long): Long {
     var x = abs(a)
     var y = abs(b)

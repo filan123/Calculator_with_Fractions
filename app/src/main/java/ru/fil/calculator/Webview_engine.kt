@@ -73,8 +73,8 @@ object FormulaEngine {
 
     private const val FLEX_LAYOUT_CSS =
         "html,body{height:100%;margin:0;padding:0;overflow:hidden;box-sizing:border-box;}" +
-            "body{display:flex;align-items:flex-end;justify-content:flex-start;padding-left:8px;padding-bottom:4px;}"
-
+                "body{display:flex;align-items:flex-end;justify-content:flex-start;padding-left:8px;padding-bottom:4px;}" +
+                ".formula .katex{font-size:1.4em!important;}"
     private const val LAST_KATEX_CSS =
         ".katex,.katex *{color:#A6A6A6!important;}.formula .katex{font-size:0.9em!important;}"
 
