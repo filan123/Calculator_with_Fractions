@@ -2,6 +2,14 @@ package ru.fil.calculator
 
 import kotlin.math.abs
 
+private inline fun <T> withOverflowAsExpressionError(block: () -> T): T {
+    return try {
+        block()
+    } catch (_: ArithmeticException) {
+        throw ExpressionEvaluationError("Превышена память")
+    }
+}
+
 private fun powLong(value: Long, exp: Long): Long {
     require(exp >= 0L) { "Exponent must be non-negative in powLong" }
 
@@ -9,7 +17,7 @@ private fun powLong(value: Long, exp: Long): Long {
     val base = value
     var i = 0L
     while (i < exp) {
-        result *= base
+        result = Math.multiplyExact(result, base)
         i++
     }
     return result
@@ -20,38 +28,52 @@ private fun longToLongChecked(value: Long): Long {
 }
 
 private fun powLongChecked(value: Long, exp: Long): Long {
-    val resLong = powLong(value, exp)
-    return longToLongChecked(resLong)
+    return withOverflowAsExpressionError {
+        val resLong = powLong(value, exp)
+        longToLongChecked(resLong)
+    }
 }
 
 fun Addition(a: MyFraction, b: MyFraction): MyFraction {
     // a/b + c/d = (ad + bc) / bd
-    val num = a.numerator * b.denominator + b.numerator * a.denominator
-    val den = a.denominator * b.denominator
-    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    return withOverflowAsExpressionError {
+        val leftPart = Math.multiplyExact(a.numerator, b.denominator)
+        val rightPart = Math.multiplyExact(b.numerator, a.denominator)
+        val num = Math.addExact(leftPart, rightPart)
+        val den = Math.multiplyExact(a.denominator, b.denominator)
+        shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    }
 }
 
 fun Subtraction(a: MyFraction, b: MyFraction): MyFraction {
     // a/b - c/d = (ad - bc) / bd
-    val num = a.numerator * b.denominator - b.numerator * a.denominator
-    val den = a.denominator * b.denominator
-    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    return withOverflowAsExpressionError {
+        val leftPart = Math.multiplyExact(a.numerator, b.denominator)
+        val rightPart = Math.multiplyExact(b.numerator, a.denominator)
+        val num = Math.subtractExact(leftPart, rightPart)
+        val den = Math.multiplyExact(a.denominator, b.denominator)
+        shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    }
 }
 
 fun Multiply(a: MyFraction, b: MyFraction): MyFraction {
     // a/b * c/d = ac / bd
-    val num = a.numerator * b.numerator
-    val den = a.denominator * b.denominator
-    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    return withOverflowAsExpressionError {
+        val num = Math.multiplyExact(a.numerator, b.numerator)
+        val den = Math.multiplyExact(a.denominator, b.denominator)
+        shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    }
 }
 
 fun Divide(a: MyFraction, b: MyFraction): MyFraction {
     // a/b / c/d = ad / bc
     if (b.numerator == 0L) throw DenominatorZeroError()
 
-    val num = a.numerator * b.denominator
-    val den = a.denominator * b.numerator
-    return shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    return withOverflowAsExpressionError {
+        val num = Math.multiplyExact(a.numerator, b.denominator)
+        val den = Math.multiplyExact(a.denominator, b.numerator)
+        shortenIfSafe(MyFraction(longToLongChecked(num), longToLongChecked(den)))
+    }
 }
 
 
