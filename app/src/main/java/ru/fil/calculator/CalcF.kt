@@ -137,7 +137,7 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
             is BinaryOperand -> {
                 if (stack.size < 2) {
                     throw ExpressionEvaluationError(
-                        "Не хватает операнда для операции «${token.value}»: в стеке ${stack.size}, нужно 2"
+                        "Не хватает операнда для операции «${token.value}»"
                     )
                 }
 
@@ -161,7 +161,7 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
                     "sqrt" -> {
                         if (stack.size < 1) {
                             throw ExpressionEvaluationError(
-                                "Не хватает операнда для квадратного корня в стеке ${stack.size}, нужно 1"
+                                "Не хватает операнда для квадратного корня"
                             )
                         }
                         val arg = stack.removeLast()

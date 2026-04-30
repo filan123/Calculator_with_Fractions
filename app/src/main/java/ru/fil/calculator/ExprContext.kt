@@ -101,7 +101,12 @@ class ExprContext(
             posOfpipe -= 1
             return posOfpipe
         }
-
+        // Удаление технического пробела
+        if (text[posOfpipe-1] in listOf(',')) {
+            text.delete(posOfpipe-2, posOfpipe)
+            posOfpipe -= 2
+            return posOfpipe
+        }
         // Если перед курсором закрывающая скобка, возможно это конец \frac{...}{...}
         val start = posOfpipe - 1
 

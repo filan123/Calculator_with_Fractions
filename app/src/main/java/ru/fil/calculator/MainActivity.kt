@@ -3,12 +3,14 @@ package ru.fil.calculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import android.widget.GridLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.judemanutd.katexview.KatexView
@@ -21,8 +23,8 @@ class MainActivity : AppCompatActivity() {
     val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}","^{3}","^{\\,}", "\\sqrt{\\,}")
 
     // создаем тэги для кнопок в стиле KaTeX
-    val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","-", "1","2","3","\\div", ".","0","S \\Leftrightarrow D","eval")
-    val list_add_btn = listOf("delete","AC","\\sqrt{\\,}", "(", ")", "^{\\,}","^{3}",  "^{2}", "*\\sin(\\,)*", "*\\cos(\\,)*", "*\\tan(\\,)*","*\\cot(\\,)*")
+    val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","\\div", "1","2","3","-", ".","0","S \\Leftrightarrow D","eval")
+    val list_add_btn = listOf("delete","AC","\\sqrt{\\,}", "(", ")", "^{\\,}", "^{2}","^{3}",  "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
 
     lateinit var controller: FormulaController
 
@@ -76,6 +78,19 @@ class MainActivity : AppCompatActivity() {
             }
             addView(katex)
             setOnClickListener(listener)
+        }
+    }
+
+    private fun showErrorToast(message: String) {
+        val toastView = LayoutInflater.from(this).inflate(R.layout.toast_error, null)
+        val toastText = toastView.findViewById<TextView>(R.id.toastErrorText)
+        toastText.text = message
+
+        Toast(this).apply {
+            duration = Toast.LENGTH_LONG
+            setGravity(Gravity.CENTER, 0, 0)
+            view = toastView
+            show()
         }
     }
 
@@ -137,23 +152,11 @@ class MainActivity : AppCompatActivity() {
                         context.posOfpipe = context.text.length
                         FormulaEngine.renderLastExpression(expressionBeforeEval.toString())
                     } catch (e: ExpressionEvaluationError) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            e.message ?: "Ошибка вычисления выражения",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        showErrorToast(e.message ?: "Ошибка вычисления выражения")
                     } catch (e: DenominatorZeroError) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            e.message ?: "Деление на ноль",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        showErrorToast(e.message ?: "Деление на ноль")
                     } catch (e: ArithmeticException) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            e.message ?: "Алгебраическая ошибка",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        showErrorToast(e.message ?: "Алгебраическая ошибка")
 
                     }
                 }

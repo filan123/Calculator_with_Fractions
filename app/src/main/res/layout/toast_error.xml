@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/toast_error_background">
+
+    <ImageView
+        android:id="@+id/toastErrorIcon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_toast_error"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:id="@+id/toastErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textColor="#FF1B1B"
+        android:textSize="15sp"
+        android:maxLines="3" />
+
+</LinearLayout>
