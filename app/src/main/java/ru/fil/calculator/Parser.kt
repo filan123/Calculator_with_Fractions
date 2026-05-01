@@ -110,11 +110,6 @@ fun parser(text: StringBuilder): MutableList<Item> {
      * Нормализует mixed-запись вида `2\dfrac{1}{3}`:
      * два соседних токена `MyFraction(a,1)` и `MyFraction(b,d)` (d != 1)
      * сворачиваются в один `MyFraction(sign(a) * (abs(a) * d + b), d)`.
-     *
-     * Защитные правила:
-     * - только соседние дробные токены;
-     * - дробная часть должна быть положительной (0 < b <= d);
-     * - нулевая целая часть не трогается.
      */
     fun normalizeMixedFractions(items: MutableList<Item>) {
         var idx = 0

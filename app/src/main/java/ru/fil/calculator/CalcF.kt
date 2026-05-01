@@ -1,6 +1,9 @@
 package ru.fil.calculator
 
 import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.tan
 
 private inline fun <T> withOverflowAsExpressionError(block: () -> T): T {
     return try {
@@ -127,6 +130,7 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
 
     val stack = ArrayDeque<MyFraction>()
 
+
     rpnItems.forEach { token ->
         when (token) {
             is MyFraction -> {
@@ -158,6 +162,10 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
 
             is UnaryOperand -> {
                 when (token.value) {
+                    "pi" -> {
+                        stack.addLast(MyFraction(104348L,33215L))
+                    }
+
                     "sqrt" -> {
                         if (stack.size < 1) {
                             throw ExpressionEvaluationError(
@@ -178,6 +186,41 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
                         ) ?: fractionPowApproximate(arg, MyFraction(1, 2))
                         stack.addLast(result)
                     }
+
+                    "sin", "cos", "tan", "cot" -> {
+                        if (stack.size < 1) {
+                            throw ExpressionEvaluationError(
+                                "Не хватает операнда для функции «${token.value}»"
+                            )
+                        }
+                        val arg = stack.removeLast()
+                        val argAsDouble = arg.numerator.toDouble() / arg.denominator.toDouble()
+                        val result = when (token.value) {
+                            "sin" -> sin(argAsDouble)
+                            "cos" -> cos(argAsDouble)
+                            "tan" -> {
+                                val tanValue = tan(argAsDouble)
+                                if (abs(tanValue) > 79) {
+                                    throw ArithmeticException("Тангенс не определён для этого значения")
+                                }
+                                tanValue
+                            }
+
+                            "cot" -> {
+                                val tanValue = tan(argAsDouble)
+                                if (abs(tanValue) > 79) {
+                                    throw ArithmeticException("Котангенс не определён для этого значения")
+                                }
+                                1.0 / tanValue
+                            }
+
+                            else -> throw ExpressionEvaluationError(
+                                "Неподдерживаемый унарный операнд: ${token.value}"
+                            )
+                        }
+                        stack.addLast(doubleToApproxFraction(result))
+                    }
+
                     else -> throw ExpressionEvaluationError(
                         "Неподдерживаемый унарный операнд: ${token.value}"
                     )

@@ -19,12 +19,12 @@ import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity() {
     val fractionLatex = "\\dfrac{\\,\\,}{\\,\\,}"
-    val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,fractionLatex )
-    val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}","^{3}","^{\\,}", "\\sqrt{\\,}")
+    val list_numb = listOf("0","1","2","3","4","5","6","7","8","9","." ,fractionLatex, "\\pi")
+    val list_oper = listOf("\\cdot", "+", "-", "\\div", "(", ")","^{2}","^{3}","^{\\,\\,}", "\\sqrt{\\,\\,}",  "\\sin()", "\\cos()", "\\tan()","\\cot()")
 
     // создаем тэги для кнопок в стиле KaTeX
     val list_btn = listOf("\\leftarrow","\\rightarrow",fractionLatex,"\\cdot", "7","8","9","+", "4","5","6","\\div", "1","2","3","-", ".","0","S \\Leftrightarrow D","eval")
-    val list_add_btn = listOf("delete","AC","\\sqrt{\\,}", "(", ")", "^{\\,}", "^{2}","^{3}",  "\\sin(\\,)", "\\cos(\\,)", "\\tan(\\,)","\\cot(\\,)")
+    val list_add_btn = listOf("delete","AC","\\sqrt{\\,\\,}", "(", ")", "^{\\,\\,}", "^{2}","\\pi",  "\\sin()", "\\cos()", "\\tan()","\\cot()")
 
     lateinit var controller: FormulaController
 
@@ -36,13 +36,14 @@ class MainActivity : AppCompatActivity() {
         fractionLatex->"$$\\dfrac{x}{y}$$"
         "^{2}" -> "\$\$x^{2}$$"
         "^{3}" -> "\$\$x^{3}$$"
-        "\\sin(\\,)" -> "$$\\sin(x)$$"
-        "\\cos(\\,)" -> "$$\\cos(x)$$"
-        "\\tan(\\,)" -> "$$\\tan(x)$$"
-        "\\cot(\\,)" -> "$$\\cot(x)$$"
+        "\\sin()" -> "$$\\sin(x)$$"
+        "\\cos()" -> "$$\\cos(x)$$"
+        "\\tan()" -> "$$\\tan(x)$$"
+        "\\cot()" -> "$$\\cot(x)$$"
         "\\cdot" -> "$$\\times$$"
         "S \\Leftrightarrow D" -> "\$\$S \\leftrightarrow D\$\$"
-        "^{\\,}" -> "\$\$x^{y}$$"
+        "^{\\,\\,}" -> "\$\$x^{y}$$"
+        "\\sqrt{\\,\\,}" -> "$$\\sqrt{x}$$"
         else -> "$$" + tag + "$$"
     }
 

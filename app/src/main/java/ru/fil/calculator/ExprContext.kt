@@ -253,11 +253,11 @@ class ExprContext(
 
         fun isBadCursorPos(pos: Int): Boolean {
             if (pos !in 0..len) return true
-
-
+            // \\,|\\,
+            if ( pos in 1 until len && text[pos] == '\\' && text[pos-1] == ','){return true}
             //1)Если курсор стоит }|{
             if (pos < len && text[pos] == '{' && text[pos-1]=='}'){ return true}
-
+            if (pos in 2 until len && text.slice(pos-2..pos) in listOf("os(","in(","ot(","an(")){return true}
             // 2) Позиция внутри имени команды: \f|rac, \frac|
             // Ищем начало "слова" слева от pos
             var i = pos - 1
