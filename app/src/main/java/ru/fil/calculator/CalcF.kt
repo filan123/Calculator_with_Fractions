@@ -250,6 +250,3 @@ fun EVAL(expression: StringBuilder): MyFraction {
     return evaluateRpn(rpnItems)
 }
 
-fun EVAL(expression: String): MyFraction {
-    return EVAL(StringBuilder(expression))
-}
