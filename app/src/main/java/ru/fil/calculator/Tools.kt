@@ -121,7 +121,7 @@ internal fun shortenIfSafe(fr: MyFraction): MyFraction {
 /**
  * Приближение вещественного числа рациональной дробью (медианты Штерна–Броко).
  */
-internal fun doubleToApproxFraction(value: Double, maxDen: Int = 1_000_000): MyFraction {
+internal fun doubleToApproxFraction(value: Double, maxDen: Long = 1_000_000_000): MyFraction {
     if (!value.isFinite()) throw ArithmeticException("Некорректный результат степени")
     val sign = if (value < 0) -1L else 1L
     val x = abs(value)
@@ -138,7 +138,7 @@ internal fun doubleToApproxFraction(value: Double, maxDen: Int = 1_000_000): MyF
     repeat(80) {
         val mN = lN + rN
         val mD = lD + rD
-        if (mD > maxDen.toLong() || mN < 0L) return@repeat
+        if (mD > maxDen || mN < 0L) return@repeat
         val med = mN.toDouble() / mD
         val diff = abs(med - x)
         if (diff < bestDiff) {

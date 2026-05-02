@@ -134,7 +134,6 @@ internal fun evaluateRpn(rpnItems: List<Item>): MyFraction {
     rpnItems.forEach { token ->
         when (token) {
             is MyFraction -> {
-                // Keep stack values isolated from source tokens.
                 stack.addLast(MyFraction(token.numerator, token.denominator))
             }
 

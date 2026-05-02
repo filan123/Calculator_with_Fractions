@@ -18,7 +18,7 @@ fun toRpn(items: MutableList<Item>): MutableList<Item> {
     fun precedence(op: String): Int = when (op) {
         "^" -> 4
         "\\cdot", "\\div" -> 3
-        "+", "-", "\\pm" -> 2
+        "+", "-" -> 2
         else -> 0
     }
 

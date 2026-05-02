@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         toastText.text = message
 
         Toast(this).apply {
-            duration = Toast.LENGTH_LONG
+            duration = Toast.LENGTH_SHORT
             setGravity(Gravity.CENTER, 0, 0)
             view = toastView
             show()

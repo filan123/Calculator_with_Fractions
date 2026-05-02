@@ -14,7 +14,7 @@ import kotlin.math.abs
  */
 fun parser(text: StringBuilder): MutableList<Item> {
     val s = text.toString()
-    val res = mutableListOf<Item>()
+     val res = mutableListOf<Item>()
 
     var i = 0
     // Нужно для различения унарного минуса в числе и бинарного оператора '-'.
@@ -79,7 +79,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
             .replace("\\;", "")
             .trim()
 
-        if (cleaned.isEmpty()) return MyFraction(0, 1)
+        if (cleaned.isEmpty()) {throw ExpressionEvaluationError("Не все поля заполнены")}
 
         parseNumberToken(cleaned)?.let { return it }
 
@@ -140,9 +140,9 @@ fun parser(text: StringBuilder): MutableList<Item> {
             }
 
             val sign = if (whole.numerator < 0) -1L else 1L
-            val absWhole = abs(whole.numerator).toLong()
-            val denLong = d.toLong()
-            val numLong = sign * (absWhole * denLong + b.toLong())
+            val absWhole = abs(whole.numerator)
+            val denLong = d
+            val numLong = sign * (absWhole * denLong + b)
 
             items[idx] = MyFraction(numLong, d)
             items.removeAt(idx + 1)
@@ -244,8 +244,7 @@ fun parser(text: StringBuilder): MutableList<Item> {
 
             // Представляем \dfrac{a}{b} как рациональное число: a/b.
             val token = if (den.numerator == 0L) {
-                // Чтобы парсер не падал на незаполненном шаблоне `\dfrac{\,\,}{\,\,}`.
-                MyFraction(0, 1)
+                throw ExpressionEvaluationError("Деление на ноль")
             } else {
                 MyFraction(
                     num.numerator * den.denominator,
