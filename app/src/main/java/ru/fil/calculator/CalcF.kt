@@ -9,12 +9,12 @@ private inline fun <T> withOverflowAsExpressionError(block: () -> T): T {
     return try {
         block()
     } catch (_: ArithmeticException) {
-        throw ExpressionEvaluationError("Превышена память")
+        throw ExpressionEvaluationError("Выход за границы диапазона целых чисел (64 бита)")
     }
 }
 
 private fun powLong(value: Long, exp: Long): Long {
-    require(exp >= 0L) { "Exponent must be non-negative in powLong" }
+    require(exp >= 0L) { "Показатель степени должен быть неотрицательным в powLong" }
 
     var result = 1L
     val base = value
